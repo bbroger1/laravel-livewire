@@ -11,7 +11,7 @@ class ShowTweets extends Component
     //traith para não ocorrer refresh quando percorrer a paginação
     use WithPagination;
 
-    public $content = 'Apenas um teste';
+    public $content = '';
 
     protected $rules = [
         'content' => 'required|min:3|max:255'
@@ -20,7 +20,7 @@ class ShowTweets extends Component
     public function render()
     {
         //recuperar todos os tweets
-        $tweets = Tweet::with('user')->latest()->paginate(5);
+        $tweets = Tweet::with('user')->latest()->paginate(10);
 
         //tem essa forma para passar dados para a view
         return view('livewire.show-tweets', compact('tweets'));
@@ -47,5 +47,19 @@ class ShowTweets extends Component
         ]);
 
         $this->content = '';
+    }
+
+    public function like($idTweet)
+    {
+        $tweet = Tweet::find($idTweet);
+
+        $tweet->likes()->create([
+            'user_id' => auth()->user()->id
+        ]);
+    }
+
+    public function unlike(Tweet $tweet)
+    {
+        $tweet->likes()->delete();
     }
 }
